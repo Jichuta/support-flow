@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_191500) do
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.integer "support_request_id", null: false
+    t.integer "team_member_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["support_request_id"], name: "index_comments_on_support_request_id"
+    t.index ["team_member_id"], name: "index_comments_on_team_member_id"
+  end
+
   create_table "support_requests", force: :cascade do |t|
     t.integer "assignee_id"
     t.datetime "created_at", null: false
@@ -41,6 +51,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_190000) do
     t.index ["email"], name: "index_team_members_on_email", unique: true
   end
 
+  add_foreign_key "comments", "support_requests"
+  add_foreign_key "comments", "team_members"
   add_foreign_key "support_requests", "team_members", column: "assignee_id"
   add_foreign_key "support_requests", "team_members", column: "creator_id"
   add_foreign_key "support_requests", "team_members", column: "team_id"
