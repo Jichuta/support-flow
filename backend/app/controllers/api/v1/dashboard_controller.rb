@@ -1,28 +1,36 @@
 module Api
   module V1
     class DashboardController < ApplicationController
-      STATUS_NAMES = { 0 => "open", 1 => "in_progress", 2 => "resolved", 3 => "closed" }.freeze
-      PRIORITY_NAMES = { 0 => "low", 1 => "medium", 2 => "high", 3 => "critical" }.freeze
-
       def index
-        requests = SupportRequest.all
-
         render json: {
-          total_requests: requests.count,
-          requests_by_status: requests.group(:status).count.transform_keys { |key|
-            STATUS_NAMES[key] || key.to_s
-          },
-          requests_by_priority: requests.group(:priority).count.transform_keys { |key|
-            PRIORITY_NAMES[key] || key.to_s
-          },
-          requests_by_team: requests
-            .joins(:team)
-            .group("team_members.name")
-            .count
-            .map { |name, count| { name: name, count: count } }
-            .sort_by { |entry| entry[:count] }
-            .reverse
+          total_requests: SupportRequest.count,
+          requests_by_status: status_counts,
+          requests_by_priority: priority_counts,
+          requests_by_team: team_request_counts
         }
+      end
+
+      private
+
+      def status_counts
+        SupportRequest.group(:status).count.transform_keys { |key|
+          SupportRequest.statuses.key(key) || key.to_s
+        }
+      end
+
+      def priority_counts
+        SupportRequest.group(:priority).count.transform_keys { |key|
+          SupportRequest.priorities.key(key) || key.to_s
+        }
+      end
+
+      def team_request_counts
+        SupportRequest
+          .joins(:team)
+          .group("team_members.id", "team_members.name")
+          .order("count_all DESC")
+          .count
+          .map { |(_id, name), count| { name: name, count: count } }
       end
     end
   end
