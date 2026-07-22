@@ -29,6 +29,7 @@ RSpec.describe TeamMember, type: :model do
     it 'defines has_many :support_requests' do
       assoc = TeamMember.reflect_on_association(:support_requests)
       expect(assoc.macro).to eq(:has_many)
+      expect(assoc.options[:foreign_key]).to eq(:team_id)
       expect(assoc.options[:dependent]).to eq(:nullify)
     end
 
