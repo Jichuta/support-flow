@@ -1,34 +1,26 @@
 <template>
-  <div class="form-group">
-    <label v-if="label" class="form-label" :for="inputId">{{ label }}</label>
-    <input
-      :id="inputId"
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      class="form-input"
-      :class="{ 'form-input--error': error }"
-      @input="$emit('update:modelValue', $event.target.value)"
-    />
-    <span v-if="error" class="form-error">{{ error }}</span>
-  </div>
+  <v-text-field
+    :model-value="modelValue"
+    :label="label"
+    :type="type"
+    :placeholder="placeholder"
+    :error-messages="error ? [error] : []"
+    density="comfortable"
+    variant="outlined"
+    color="primary"
+    hide-details="auto"
+    @update:model-value="$emit('update:modelValue', $event)"
+  />
 </template>
 
 <script setup>
-import { computed } from 'vue'
-
-const props = defineProps({
+defineProps({
   modelValue: { type: String, default: '' },
   label: { type: String, default: '' },
   type: { type: String, default: 'text' },
   placeholder: { type: String, default: '' },
-  error: { type: String, default: '' },
-  id: { type: String, default: '' }
+  error: { type: String, default: '' }
 })
 
 defineEmits(['update:modelValue'])
-
-const inputId = computed(
-  () => props.id || `input-${props.label?.toLowerCase().replace(/\s+/g, '-') || 'field'}`
-)
 </script>
