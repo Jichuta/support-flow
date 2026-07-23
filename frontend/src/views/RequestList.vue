@@ -1,11 +1,5 @@
 <template>
   <div class="request-list-page">
-    <Teleport to=".top-bar-right" v-if="mounted">
-      <router-link to="/requests/new" class="btn btn-primary">
-        + New Request
-      </router-link>
-    </Teleport>
-
     <!-- Page Header -->
     <div class="page-header">
       <div>
@@ -238,7 +232,6 @@ import StatusBadge from '@/components/StatusBadge.vue'
 import PriorityBadge from '@/components/PriorityBadge.vue'
 
 const store = useSupportRequestStore()
-const mounted = ref(false)
 const searchInput = ref('')
 
 let debounceTimer = null
@@ -295,7 +288,6 @@ const formatDate = (dateStr) => {
 }
 
 onMounted(() => {
-  mounted.value = true
   searchInput.value = store.filters.q || ''
   store.fetchRequests()
 })
