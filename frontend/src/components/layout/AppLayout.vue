@@ -11,6 +11,7 @@
         <RouterView />
       </main>
     </div>
+    <ToastContainer />
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopBar from '@/components/layout/AppTopBar.vue'
+import ToastContainer from '@/components/shared/ToastContainer.vue'
 
 const route = useRoute()
 
