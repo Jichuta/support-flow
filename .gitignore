@@ -66,3 +66,6 @@ Thumbs.db
 
 # NPM debug logs
 /npm-debug.log*
+
+/.opencode
+/tests
