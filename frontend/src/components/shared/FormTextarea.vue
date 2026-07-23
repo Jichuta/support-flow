@@ -28,5 +28,7 @@ const props = defineProps({
 
 defineEmits(['update:modelValue'])
 
-const inputId = computed(() => props.id || `textarea-${props.label?.toLowerCase().replace(/\s+/g, '-') || 'field'}`)
+const inputId = computed(
+  () => props.id || `textarea-${props.label?.toLowerCase().replace(/\s+/g, '-') || 'field'}`
+)
 </script>

@@ -21,11 +21,11 @@
             <span class="search-icon">🔍</span>
             <input
               id="search-input"
-              type="text"
               v-model="searchInput"
-              @input="onSearchInput"
+              type="text"
               placeholder="Search by title..."
               class="filter-input"
+              @input="onSearchInput"
             />
           </div>
         </div>
@@ -36,8 +36,8 @@
           <select
             id="status-filter"
             :value="store.filters.status"
-            @change="onStatusChange"
             class="filter-select"
+            @change="onStatusChange"
           >
             <option value="">All Statuses</option>
             <option value="open">Open</option>
@@ -53,8 +53,8 @@
           <select
             id="priority-filter"
             :value="store.filters.priority"
-            @change="onPriorityChange"
             class="filter-select"
+            @change="onPriorityChange"
           >
             <option value="">All Priorities</option>
             <option value="low">Low</option>
@@ -72,8 +72,8 @@
               <input
                 type="checkbox"
                 :checked="store.filters.overdue"
-                @change="onOverdueChange"
                 class="checkbox-input"
+                @change="onOverdueChange"
               />
               <span>Overdue</span>
             </label>
@@ -81,8 +81,8 @@
               <input
                 type="checkbox"
                 :checked="store.filters.unassigned"
-                @change="onUnassignedChange"
                 class="checkbox-input"
+                @change="onUnassignedChange"
               />
               <span>Unassigned</span>
             </label>
@@ -92,7 +92,7 @@
 
       <!-- Clear Filters Button -->
       <div v-if="hasActiveFilters" class="clear-filters-row">
-        <button @click="onClearFilters" class="btn btn-link btn-clear-filters">
+        <button class="btn btn-link btn-clear-filters" @click="onClearFilters">
           ✕ Clear Filters
         </button>
       </div>
@@ -101,7 +101,7 @@
     <!-- Error State -->
     <div v-if="store.error" class="alert alert-error">
       <span>{{ store.error.message || 'Failed to load support requests.' }}</span>
-      <button @click="store.fetchRequests()" class="btn btn-sm btn-outline ml-2">Retry</button>
+      <button class="btn btn-sm btn-outline ml-2" @click="store.fetchRequests()">Retry</button>
     </div>
 
     <!-- Loading State: Table Skeleton -->
@@ -137,9 +137,13 @@
       <div class="empty-icon">📂</div>
       <h3 class="empty-title">No requests found</h3>
       <p class="empty-subtitle">
-        {{ hasActiveFilters ? 'Try adjusting your filters to find what you are looking for.' : 'No support requests have been created yet.' }}
+        {{
+          hasActiveFilters
+            ? 'Try adjusting your filters to find what you are looking for.'
+            : 'No support requests have been created yet.'
+        }}
       </p>
-      <button v-if="hasActiveFilters" @click="onClearFilters" class="btn btn-secondary mt-3">
+      <button v-if="hasActiveFilters" class="btn btn-secondary mt-3" @click="onClearFilters">
         Clear Filters
       </button>
     </div>
@@ -159,11 +163,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="req in store.requests"
-            :key="req.id"
-            :class="{ 'row-overdue': req.overdue }"
-          >
+          <tr v-for="req in store.requests" :key="req.id" :class="{ 'row-overdue': req.overdue }">
             <!-- ID -->
             <td class="id-cell">#{{ req.id }}</td>
 
@@ -186,12 +186,8 @@
 
             <!-- Assignee -->
             <td class="assignee-cell">
-              <span v-if="req.assignee" class="assignee-name">
-                👤 {{ req.assignee.name }}
-              </span>
-              <span v-else class="unassigned-tag">
-                Unassigned
-              </span>
+              <span v-if="req.assignee" class="assignee-name"> 👤 {{ req.assignee.name }} </span>
+              <span v-else class="unassigned-tag"> Unassigned </span>
             </td>
 
             <!-- Due Date -->
@@ -388,7 +384,9 @@ onMounted(() => {
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
 }
 
@@ -404,7 +402,9 @@ onMounted(() => {
   font-size: 14px;
   background-color: #ffffff;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
 }
 
@@ -616,14 +616,26 @@ onMounted(() => {
   margin-left: auto;
 }
 
-.w-8 { width: 32px; }
-.w-20 { width: 80px; }
-.w-24 { width: 96px; }
-.w-48 { width: 192px; }
+.w-8 {
+  width: 32px;
+}
+.w-20 {
+  width: 80px;
+}
+.w-24 {
+  width: 96px;
+}
+.w-48 {
+  width: 192px;
+}
 
 @keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Empty State */
@@ -736,6 +748,10 @@ onMounted(() => {
   border: 1px solid #fecaca;
 }
 
-.mt-3 { margin-top: 12px; }
-.ml-2 { margin-left: 8px; }
+.mt-3 {
+  margin-top: 12px;
+}
+.ml-2 {
+  margin-left: 8px;
+}
 </style>

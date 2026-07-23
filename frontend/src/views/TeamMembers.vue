@@ -5,9 +5,7 @@
         <h1 class="page-title">Team Members</h1>
         <p class="page-subtitle">Manage your support team members and their roles</p>
       </div>
-      <button class="btn btn-primary" @click="showAddPanel = true">
-        + Add Member
-      </button>
+      <button class="btn btn-primary" @click="showAddPanel = true">+ Add Member</button>
     </div>
 
     <ErrorMessage
@@ -84,9 +82,11 @@
     <ConfirmModal
       v-if="memberToToggle"
       :title="memberToToggle.active ? 'Deactivate Member?' : 'Activate Member?'"
-      :message="memberToToggle.active
-        ? 'This member will no longer be assignable to new requests.'
-        : 'This member will be available for assignment again.'"
+      :message="
+        memberToToggle.active
+          ? 'This member will no longer be assignable to new requests.'
+          : 'This member will be available for assignment again.'
+      "
       icon="⚠"
       variant="warning"
       :confirm-label="memberToToggle.active ? 'Deactivate' : 'Activate'"
@@ -94,11 +94,7 @@
       @cancel="memberToToggle = null"
     />
 
-    <SidePanel
-      v-if="showAddPanel"
-      title="New Team Member"
-      @close="closeAddPanel"
-    >
+    <SidePanel v-if="showAddPanel" title="New Team Member" @close="closeAddPanel">
       <form @submit.prevent="handleCreate">
         <FormInput
           v-model="form.name"
@@ -214,7 +210,7 @@ async function handleCreate() {
     closeAddPanel()
   } catch (err) {
     if (err.details) {
-      err.details.forEach(d => toast.error(d))
+      err.details.forEach((d) => toast.error(d))
     } else {
       toast.error(err.message || 'Failed to create member')
     }

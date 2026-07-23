@@ -9,11 +9,7 @@
       @change="$emit('update:modelValue', $event.target.value)"
     >
       <option v-if="placeholder" value="">{{ placeholder }}</option>
-      <option
-        v-for="option in options"
-        :key="option.value"
-        :value="option.value"
-      >
+      <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
     </select>
@@ -35,5 +31,7 @@ const props = defineProps({
 
 defineEmits(['update:modelValue'])
 
-const inputId = computed(() => props.id || `select-${props.label?.toLowerCase().replace(/\s+/g, '-') || 'field'}`)
+const inputId = computed(
+  () => props.id || `select-${props.label?.toLowerCase().replace(/\s+/g, '-') || 'field'}`
+)
 </script>
