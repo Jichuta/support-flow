@@ -1,0 +1,54 @@
+@startuml
+title Backend architecture (Rails API)
+left to right direction
+
+package "Rails API" {
+  component "ApplicationController" as app_ctrl
+
+  package "Controllers" {
+    component "TeamMembersController" as team_ctrl
+    component "SupportRequestsController" as request_ctrl
+    component "CommentsController" as comment_ctrl
+    component "DashboardController" as dashboard_ctrl
+    component "TestErrorsController" as test_err_ctrl
+  }
+
+  package "Models" {
+    component "TeamMember" as team_model
+    component "SupportRequest" as request_model
+    component "Comment" as comment_model
+  }
+
+  package "Persistence" {
+    database "SQLite" as db
+  }
+
+  component "Routes" as routes
+  component "ActiveRecord" as ar
+}
+
+app_ctrl --> team_ctrl
+app_ctrl --> request_ctrl
+app_ctrl --> comment_ctrl
+app_ctrl --> dashboard_ctrl
+
+team_ctrl --> team_model
+request_ctrl --> request_model
+comment_ctrl --> comment_model
+dashboard_ctrl --> request_model
+
+team_model --> ar
+request_model --> ar
+comment_model --> ar
+
+team_ctrl --> db
+request_ctrl --> db
+comment_ctrl --> db
+dashboard_ctrl --> db
+
+routes --> team_ctrl
+routes --> request_ctrl
+routes --> comment_ctrl
+routes --> dashboard_ctrl
+routes --> test_err_ctrl
+@enduml

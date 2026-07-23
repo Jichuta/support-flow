@@ -1,0 +1,54 @@
+@startuml
+title Detailed support request lifecycle
+skinparam sequenceMessageAlign center
+actor Operator
+participant "RequestList.vue" as list_view
+participant "SupportRequestForm.vue" as form
+participant "SupportRequestStore" as request_store
+participant "RequestDetailModal.vue" as detail_modal
+participant "Axios Client" as client
+participant "SupportRequestsController" as sr_controller
+participant "CommentsController" as comments_controller
+participant "SupportRequest" as sr_model
+participant "Comment" as comment_model
+database "SQLite" as db
+
+Operator -> list_view: Open create/edit request
+list_view -> form: Show side panel
+Operator -> form: Fill title, description, priority, assignee
+form -> request_store: createRequest/updateRequest(payload)
+request_store -> client: POST/PATCH /support_requests
+client -> sr_controller: route action
+sr_controller -> sr_model: save/update
+sr_model -> db: INSERT/UPDATE support_requests
+db --> sr_model: persisted record
+sr_model --> sr_controller: payload
+sr_controller --> client: JSON response
+client --> request_store: request data
+request_store --> list_view: refresh list
+list_view --> Operator: show updated request
+
+Operator -> detail_modal: Open request details
+detail_modal -> request_store: fetchRequest(id)
+request_store -> client: GET /support_requests/:id
+client -> sr_controller: show
+sr_controller -> sr_model: load request + comments
+sr_model -> db: SELECT request and comments
+db --> sr_model: associated rows
+sr_model --> sr_controller: enriched payload
+sr_controller --> client: JSON response
+client --> request_store: current request
+request_store --> detail_modal: display details
+
+Operator -> detail_modal: Add comment
+detail_modal -> request_store: addComment(id, payload)
+request_store -> client: POST /support_requests/:id/comments
+client -> comments_controller: create
+comments_controller -> comment_model: save
+comment_model -> db: INSERT comment
+db --> comment_model: created comment
+comment_model --> comments_controller: comment object
+comments_controller --> client: JSON response
+client --> request_store: new comment
+request_store --> detail_modal: append to comments list
+@enduml

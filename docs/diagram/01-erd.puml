@@ -1,0 +1,46 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity TeamMembers {
+  * id : integer <<PK>>
+  --
+  * name : string
+  * email : string <<unique>>
+  * role : integer
+  * active : boolean
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity SupportRequests {
+  * id : integer <<PK>>
+  --
+  * title : string
+  * description : text
+  * status : integer
+  * priority : integer
+  * due_date : date
+  * resolved_at : datetime
+  * creator_id : integer <<FK>>
+  * assignee_id : integer <<FK>>
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+entity Comments {
+  * id : integer <<PK>>
+  --
+  * body : text
+  * support_request_id : integer <<FK>>
+  * team_member_id : integer <<FK>>
+  * created_at : datetime
+  * updated_at : datetime
+}
+
+TeamMembers ||--o{ SupportRequests : creates
+TeamMembers ||--o{ SupportRequests : assigns
+TeamMembers ||--o{ Comments : writes
+SupportRequests ||--o{ Comments : contains
+@enduml
