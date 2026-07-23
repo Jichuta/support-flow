@@ -1,8 +1,8 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import StatusBadge from '@/components/StatusBadge.vue'
-import PriorityBadge from '@/components/PriorityBadge.vue'
+import StatusBadge from '@/components/shared/StatusBadge.vue'
+import PriorityBadge from '@/components/shared/PriorityBadge.vue'
 import { useSupportRequestStore } from '@/stores/supportRequestStore'
 import { useTeamMemberStore } from '@/stores/teamMemberStore'
 import { useToastStore } from '@/stores/toastStore'
@@ -49,7 +49,7 @@ watch(() => props.id, loadDetail, { immediate: true })
 
 <template>
   <section class="detail-page">
-    <div class="detail-actions"><RouterLink to="/requests">? Back to List</RouterLink><RouterLink v-if="request" :to="`/requests/${request.id}/edit`" class="button">Edit Request</RouterLink></div>
+    <div class="detail-actions"><RouterLink to="/requests">< Back to List</RouterLink><RouterLink v-if="request" :to="`/requests/${request.id}/edit`" class="button">Edit Request</RouterLink></div>
     <div v-if="requestStore.loading && !request" class="loading" aria-live="polite">Loading support request?</div>
     <div v-else-if="notFound" class="state"><h2>Request not found</h2><p>This support request may have been removed or the link is invalid.</p><RouterLink to="/requests">Return to requests</RouterLink></div>
     <div v-else-if="requestStore.error" class="state error" role="alert"><h2>Unable to load request</h2><p>{{ requestStore.error.message }}</p><button @click="requestStore.fetchRequest(id)">Try again</button></div>

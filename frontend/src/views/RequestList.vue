@@ -228,8 +228,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useSupportRequestStore } from '@/stores/supportRequestStore'
-import StatusBadge from '@/components/StatusBadge.vue'
-import PriorityBadge from '@/components/PriorityBadge.vue'
+import StatusBadge from '@/components/shared/StatusBadge.vue'
+import PriorityBadge from '@/components/shared/PriorityBadge.vue'
 
 const store = useSupportRequestStore()
 const searchInput = ref('')
