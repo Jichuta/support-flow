@@ -8,7 +8,7 @@
         </template>
       </AppTopBar>
       <main class="app-content">
-        <slot />
+        <RouterView />
       </main>
     </div>
   </div>
@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopBar from '@/components/layout/AppTopBar.vue'
 
@@ -52,5 +52,11 @@ const pageTitle = computed(() => {
   flex: 1;
   padding: 24px;
   background: #f9fafb;
+}
+
+@media (max-width: 768px) {
+  .app-layout { flex-direction: column; }
+  .app-main { margin-left: 0; min-width: 0; }
+  .app-content { padding: 16px; }
 }
 </style>
