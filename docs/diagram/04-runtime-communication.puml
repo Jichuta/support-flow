@@ -1,0 +1,26 @@
+@startuml
+title Runtime communication flow
+skinparam sequenceMessageAlign center
+actor User
+participant "Vue View" as view
+participant "Pinia Store" as store
+participant "Axios Client" as client
+participant "Rails Router" as router
+participant "Controller" as controller
+participant "Model / ActiveRecord" as model
+database "SQLite" as db
+
+User -> view: Interacts with UI
+view -> store: dispatch action
+store -> client: HTTP request
+client -> router: /api/v1/...
+router -> controller: route to action
+controller -> model: read/write records
+model -> db: SQL statements
+db --> model: rows / changes
+model --> controller: domain objects
+controller --> client: JSON response
+client --> store: parsed payload
+store --> view: update state
+view --> User: render updated UI
+@enduml

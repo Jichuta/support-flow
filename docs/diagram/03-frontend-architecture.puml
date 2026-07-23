@@ -1,0 +1,58 @@
+@startuml
+title Frontend architecture (Vue 3 + Vite)
+left to right direction
+
+package "Frontend" {
+  component "App.vue" as app
+  component "Router" as router
+  component "Vuetify" as vuetify
+
+  package "Views" {
+    component "Dashboard.vue" as dashboard_view
+    component "RequestList.vue" as request_view
+    component "TeamMembers.vue" as members_view
+  }
+
+  package "Components" {
+    component "SupportRequestForm.vue" as request_form
+    component "RequestDetailModal.vue" as detail_modal
+    component "TeamMemberForm.vue" as member_form
+    component "shared/*" as shared_components
+  }
+
+  package "Stores" {
+    component "supportRequestStore" as request_store
+    component "teamMemberStore" as member_store
+    component "dashboardStore" as dashboard_store
+    component "toastStore" as toast_store
+  }
+
+  component "API Client" as api_client
+}
+
+app --> router
+app --> vuetify
+router --> dashboard_view
+router --> request_view
+router --> members_view
+
+dashboard_view --> dashboard_store
+request_view --> request_store
+members_view --> member_store
+request_view --> request_form
+request_view --> detail_modal
+members_view --> member_form
+
+request_form --> request_store
+request_form --> member_store
+request_form --> toast_store
+detail_modal --> request_store
+detail_modal --> member_store
+detail_modal --> toast_store
+member_form --> member_store
+member_form --> toast_store
+
+request_store --> api_client
+member_store --> api_client
+dashboard_store --> api_client
+@enduml
