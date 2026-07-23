@@ -57,8 +57,15 @@ const pageTitle = computed(() => {
 }
 
 @media (max-width: 768px) {
-  .app-layout { flex-direction: column; }
-  .app-main { margin-left: 0; min-width: 0; }
-  .app-content { padding: 16px; }
+  .app-layout {
+    flex-direction: column;
+  }
+  .app-main {
+    margin-left: 0;
+    min-width: 0;
+  }
+  .app-content {
+    padding: 16px;
+  }
 }
 </style>
