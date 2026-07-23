@@ -12,7 +12,7 @@ const toastStore = useToastStore()
 
 const form = reactive({
   title: '', description: '', priority: 'medium', due_date: '',
-  assignee_id: '', creator_id: '', team_id: ''
+  assignee_id: '', creator_id: ''
 })
 const errors = reactive({})
 const loading = ref(false)
@@ -38,17 +38,16 @@ function validate() {
   if (!form.description.trim()) addError('description', 'Description is required.')
   if (!form.priority) addError('priority', 'Priority is required.')
   if (!isEdit.value && !form.creator_id) addError('creator_id', 'Creator is required.')
-  if (!isEdit.value && !form.team_id) addError('team_id', 'Team is required.')
   return Object.keys(errors).length === 0
 }
 
 function mapBackendErrors(details = []) {
   clearErrors()
   details.forEach((detail) => {
-    const key = ['title', 'description', 'priority', 'due date', 'assignee', 'creator', 'team']
+    const key = ['title', 'description', 'priority', 'due date', 'assignee', 'creator']
       .find((field) => detail.toLowerCase().startsWith(field))
     const field = key?.replace(' ', '_')
-    const mapped = { assignee: 'assignee_id', creator: 'creator_id', team: 'team_id' }[field] || field || 'general'
+    const mapped = { assignee: 'assignee_id', creator: 'creator_id' }[field] || field || 'general'
     addError(mapped, detail)
   })
 }
@@ -61,7 +60,6 @@ function payload() {
   }
   if (!isEdit.value) {
     data.creator_id = Number(form.creator_id)
-    data.team_id = Number(form.team_id)
   }
   return data
 }
@@ -160,14 +158,6 @@ onMounted(async () => {
             label="Creator"
             :items="[{ title: 'Select creator', value: '' }, ...memberItems]"
             :error-messages="errors.creator_id"
-            :disabled="loading"
-            class="mb-1"
-          />
-          <v-select
-            v-model="form.team_id"
-            label="Team"
-            :items="[{ title: 'Select team', value: '' }, ...memberItems]"
-            :error-messages="errors.team_id"
             :disabled="loading"
           />
         </template>

@@ -7,7 +7,6 @@ const store = useDashboardStore()
 const metrics = computed(() => store.metrics ?? {})
 const statuses = computed(() => metrics.value.requests_by_status ?? {})
 const priorities = computed(() => metrics.value.requests_by_priority ?? {})
-const teams = computed(() => metrics.value.requests_by_team ?? [])
 
 const cards = computed(() => [
   { title: 'Total Requests', value: metrics.value.total_requests ?? 0, icon: 'mdi-ticket-outline', color: 'primary' },
@@ -78,24 +77,6 @@ onMounted(() => store.fetchMetrics().catch(() => {}))
                 <v-list-item-title class="font-weight-bold">{{ priorities[name] ?? 0 }}</v-list-item-title>
               </v-list-item>
             </v-list>
-          </v-card>
-        </v-col>
-
-        <!-- Team Breakdown -->
-        <v-col cols="12" md="6">
-          <v-card rounded="lg">
-            <v-card-title class="text-subtitle-1 font-weight-bold">Requests by Team</v-card-title>
-            <v-list v-if="teams.length" density="comfortable">
-              <v-list-item v-for="team in teams" :key="team.name">
-                <v-list-item-title>{{ team.name }}</v-list-item-title>
-                <template #append>
-                  <v-chip color="primary" size="small" label>{{ team.count }}</v-chip>
-                </template>
-              </v-list-item>
-            </v-list>
-            <v-card-text v-else class="text-medium-emphasis">
-              No team request assignments yet.
-            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
