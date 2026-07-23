@@ -5,8 +5,7 @@ module Api
         render json: {
           total_requests: SupportRequest.count,
           requests_by_status: status_counts,
-          requests_by_priority: priority_counts,
-          requests_by_team: team_request_counts
+          requests_by_priority: priority_counts
         }
       end
 
@@ -22,15 +21,6 @@ module Api
         SupportRequest.group(:priority).count.transform_keys { |key|
           SupportRequest.priorities.key(key) || key.to_s
         }
-      end
-
-      def team_request_counts
-        SupportRequest
-          .joins(:team)
-          .group("team_members.id", "team_members.name")
-          .order("count_all DESC")
-          .count
-          .map { |(_id, name), count| { name: name, count: count } }
       end
     end
   end

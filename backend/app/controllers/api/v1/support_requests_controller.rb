@@ -2,13 +2,13 @@ module Api
   module V1
     class SupportRequestsController < ApplicationController
       def index
-        support_requests = filtered_support_requests.includes(:creator, :assignee, :team).order(created_at: :desc)
+        support_requests = filtered_support_requests.includes(:creator, :assignee).order(created_at: :desc)
 
         render json: { support_requests: support_requests.map { |support_request| support_request_payload(support_request) } }
       end
 
       def show
-        support_request = SupportRequest.includes(:creator, :assignee, :team, comments: :team_member).find(params[:id])
+        support_request = SupportRequest.includes(:creator, :assignee, comments: :team_member).find(params[:id])
 
         render json: support_request_payload(support_request, include_comments: true)
       end
@@ -63,8 +63,7 @@ module Api
           :priority,
           :due_date,
           :creator_id,
-          :assignee_id,
-          :team_id
+          :assignee_id
         )
       end
 
@@ -80,7 +79,6 @@ module Api
           overdue: support_request.overdue?,
           creator: team_member_payload(support_request.creator),
           assignee: team_member_payload(support_request.assignee),
-          team: team_member_payload(support_request.team),
           created_at: support_request.created_at,
           updated_at: support_request.updated_at
         }
