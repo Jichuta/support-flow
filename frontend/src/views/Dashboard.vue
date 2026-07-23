@@ -7,6 +7,7 @@ const store = useDashboardStore()
 const metrics = computed(() => store.metrics ?? {})
 const statuses = computed(() => metrics.value.requests_by_status ?? {})
 const priorities = computed(() => metrics.value.requests_by_priority ?? {})
+const teams = computed(() => metrics.value.requests_by_team ?? [])
 const cards = computed(() => [
   ['Total Requests', metrics.value.total_requests ?? 0],
   ['Open', statuses.value.open ?? 0],
@@ -48,6 +49,16 @@ onMounted(() => store.fetchMetrics().catch(() => {}))
               ><strong>{{ priorities[name] ?? 0 }}</strong>
             </li>
           </ul>
+        </article>
+        <article class="panel">
+          <h3>Requests by Team</h3>
+          <ul v-if="teams.length">
+            <li v-for="team in teams" :key="team.name">
+              <span>{{ team.name }}</span
+              ><strong>{{ team.count }}</strong>
+            </li>
+          </ul>
+          <p v-else>No team request assignments yet.</p>
         </article>
       </div>
     </template>
@@ -93,7 +104,7 @@ onMounted(() => store.fetchMetrics().catch(() => {}))
   grid-template-columns: repeat(4, 1fr);
 }
 .breakdowns {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   margin-top: 24px;
 }
 .card,
