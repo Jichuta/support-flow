@@ -10,8 +10,7 @@ RSpec.describe "Api::V1::Dashboard", type: :request do
       expect(json).to include(
         "total_requests",
         "requests_by_status",
-        "requests_by_priority",
-        "requests_by_team"
+        "requests_by_priority"
       )
     end
 
@@ -19,15 +18,15 @@ RSpec.describe "Api::V1::Dashboard", type: :request do
       team_a = create(:team_member, name: "Alice")
       team_b = create(:team_member, name: "Bob")
 
-      create(:support_request, status: :open, priority: :low, team: team_a)
-      create(:support_request, status: :open, priority: :medium, team: team_a)
-      create(:support_request, status: :in_progress, priority: :high, team: team_b)
+      create(:support_request, status: :open, priority: :low, creator: team_a)
+      create(:support_request, status: :open, priority: :medium, creator: team_a)
+      create(:support_request, status: :in_progress, priority: :high, creator: team_b)
 
-      resolved = create(:support_request, status: :in_progress, priority: :low, team: team_b)
+      resolved = create(:support_request, status: :in_progress, priority: :low, creator: team_b)
       create(:comment, support_request: resolved, team_member: team_b)
       resolved.update!(status: :resolved)
 
-      closed = create(:support_request, status: :open, priority: :critical, team: team_a)
+      closed = create(:support_request, status: :open, priority: :critical, creator: team_a)
       closed.update!(status: :closed)
 
       get "/api/v1/dashboard"
@@ -50,9 +49,6 @@ RSpec.describe "Api::V1::Dashboard", type: :request do
         "critical" => 1
       )
 
-      team_counts = json["requests_by_team"].map { |t| [t["name"], t["count"]] }.to_h
-      expect(team_counts["Alice"]).to eq(3)
-      expect(team_counts["Bob"]).to eq(2)
     end
 
     it "returns empty aggregations when no requests exist" do
@@ -62,7 +58,6 @@ RSpec.describe "Api::V1::Dashboard", type: :request do
       expect(json["total_requests"]).to eq(0)
       expect(json["requests_by_status"]).to be_empty
       expect(json["requests_by_priority"]).to be_empty
-      expect(json["requests_by_team"]).to be_empty
     end
   end
 end

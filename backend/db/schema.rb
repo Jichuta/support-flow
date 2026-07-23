@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_191500) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_23_164237) do
   create_table "comments", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
@@ -30,7 +30,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_191500) do
     t.integer "priority", default: 1, null: false
     t.datetime "resolved_at"
     t.integer "status", default: 0, null: false
-    t.integer "team_id", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["assignee_id"], name: "index_support_requests_on_assignee_id"
@@ -38,7 +37,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_191500) do
     t.index ["due_date"], name: "index_support_requests_on_due_date"
     t.index ["priority"], name: "index_support_requests_on_priority"
     t.index ["status"], name: "index_support_requests_on_status"
-    t.index ["team_id"], name: "index_support_requests_on_team_id"
   end
 
   create_table "team_members", force: :cascade do |t|
@@ -55,5 +53,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_191500) do
   add_foreign_key "comments", "team_members"
   add_foreign_key "support_requests", "team_members", column: "assignee_id"
   add_foreign_key "support_requests", "team_members", column: "creator_id"
-  add_foreign_key "support_requests", "team_members", column: "team_id"
 end

@@ -2,13 +2,12 @@ require "rails_helper"
 
 RSpec.describe "Api::V1::SupportRequests", type: :request do
   let(:creator) { create(:team_member, name: "Creator") }
-  let(:team) { create(:team_member, name: "Team") }
   let(:assignee) { create(:team_member, name: "Assignee") }
 
   describe "GET /api/v1/support_requests" do
     it "returns support requests with their computed overdue value" do
-      overdue_request = create(:support_request, title: "Past due request", due_date: Date.current - 1.day, creator: creator, team: team)
-      current_request = create(:support_request, title: "Current request", due_date: Date.current, creator: creator, team: team)
+      overdue_request = create(:support_request, title: "Past due request", due_date: Date.current - 1.day, creator: creator)
+      current_request = create(:support_request, title: "Current request", due_date: Date.current, creator: creator)
 
       get "/api/v1/support_requests"
 
@@ -22,9 +21,9 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
     end
 
     it "filters by status and priority" do
-      matching_request = create(:support_request, status: :open, priority: :high, creator: creator, team: team)
-      create(:support_request, status: :open, priority: :low, creator: creator, team: team)
-      create(:support_request, status: :in_progress, priority: :high, creator: creator, team: team)
+      matching_request = create(:support_request, status: :open, priority: :high, creator: creator)
+      create(:support_request, status: :open, priority: :low, creator: creator)
+      create(:support_request, status: :in_progress, priority: :high, creator: creator)
 
       get "/api/v1/support_requests", params: { status: "open", priority: "high" }
 
@@ -33,8 +32,8 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
     end
 
     it "filters by assignee using team_member_id" do
-      assigned_request = create(:support_request, assignee: assignee, creator: creator, team: team)
-      create(:support_request, creator: creator, team: team)
+      assigned_request = create(:support_request, assignee: assignee, creator: creator)
+      create(:support_request, creator: creator)
 
       get "/api/v1/support_requests", params: { team_member_id: assignee.id }
 
@@ -42,9 +41,9 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
     end
 
     it "filters overdue and unassigned requests" do
-      matching_request = create(:support_request, due_date: Date.current - 1.day, creator: creator, team: team, assignee: nil)
-      create(:support_request, due_date: Date.current - 1.day, creator: creator, team: team, assignee: assignee)
-      create(:support_request, due_date: Date.current + 1.day, creator: creator, team: team, assignee: nil)
+      matching_request = create(:support_request, due_date: Date.current - 1.day, creator: creator, assignee: nil)
+      create(:support_request, due_date: Date.current - 1.day, creator: creator, assignee: assignee)
+      create(:support_request, due_date: Date.current + 1.day, creator: creator, assignee: nil)
 
       get "/api/v1/support_requests", params: { overdue: true, unassigned: true }
 
@@ -52,8 +51,8 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
     end
 
     it "filters titles case-insensitively" do
-      matching_request = create(:support_request, title: "Login portal failure", creator: creator, team: team)
-      create(:support_request, title: "Invoice export failure", creator: creator, team: team)
+      matching_request = create(:support_request, title: "Login portal failure", creator: creator)
+      create(:support_request, title: "Invoice export failure", creator: creator)
 
       get "/api/v1/support_requests", params: { q: "PORTAL" }
 
@@ -63,7 +62,7 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
 
   describe "GET /api/v1/support_requests/:id" do
     it "returns request details with full assignee data and nested comments" do
-      support_request = create(:support_request, assignee: assignee, creator: creator, team: team)
+      support_request = create(:support_request, assignee: assignee, creator: creator)
       comment = create(:comment, support_request: support_request, team_member: creator, body: "This comment contains enough detail.")
 
       get "/api/v1/support_requests/#{support_request.id}"
@@ -94,7 +93,6 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
           priority: "high",
           due_date: Date.current + 2.days,
           creator_id: creator.id,
-          team_id: team.id,
           assignee_id: assignee.id
         }
       }
@@ -130,7 +128,7 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
 
   describe "PATCH /api/v1/support_requests/:id" do
     it "updates a support request" do
-      support_request = create(:support_request, creator: creator, team: team)
+      support_request = create(:support_request, creator: creator)
 
       patch "/api/v1/support_requests/#{support_request.id}", params: { support_request: { priority: "critical", assignee_id: assignee.id } }
 
@@ -140,7 +138,7 @@ RSpec.describe "Api::V1::SupportRequests", type: :request do
     end
 
     it "returns 422 when trying to edit a closed request" do
-      support_request = create(:support_request, creator: creator, team: team)
+      support_request = create(:support_request, creator: creator)
       support_request.update!(status: :closed)
 
       patch "/api/v1/support_requests/#{support_request.id}", params: { support_request: { title: "Changed title" } }

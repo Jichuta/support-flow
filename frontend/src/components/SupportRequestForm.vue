@@ -16,8 +16,7 @@ const form = reactive({
   priority: 'medium',
   due_date: '',
   assignee_id: '',
-  creator_id: '',
-  team_id: ''
+  creator_id: ''
 })
 const errors = reactive({})
 const loading = ref(false)
@@ -38,7 +37,6 @@ function validate() {
   if (!form.description.trim()) addError('description', 'Description is required.')
   if (!form.priority) addError('priority', 'Priority is required.')
   if (!isEdit.value && !form.creator_id) addError('creator_id', 'Creator is required.')
-  if (!isEdit.value && !form.team_id) addError('team_id', 'Team is required.')
   return Object.keys(errors).length === 0
 }
 function mapBackendErrors(details = []) {
@@ -54,10 +52,7 @@ function mapBackendErrors(details = []) {
       'team'
     ].find((field) => detail.toLowerCase().startsWith(field))
     const field = key?.replace(' ', '_')
-    const mapped =
-      { assignee: 'assignee_id', creator: 'creator_id', team: 'team_id' }[field] ||
-      field ||
-      'general'
+    const mapped = { assignee: 'assignee_id', creator: 'creator_id' }[field] || field || 'general'
     addError(mapped, detail)
   })
 }
@@ -71,7 +66,6 @@ function payload() {
   }
   if (!isEdit.value) {
     data.creator_id = Number(form.creator_id)
-    data.team_id = Number(form.team_id)
   }
   return data
 }
@@ -173,15 +167,6 @@ onMounted(async () => {
             </option></select
           ><span v-if="errors.creator_id" class="field-error" role="alert">{{
             errors.creator_id[0]
-          }}</span></label
-        ><label
-          >Team<select v-model="form.team_id" :disabled="loading">
-            <option value="">Select team</option>
-            <option v-for="member in activeMembers" :key="member.id" :value="member.id">
-              {{ member.name }}
-            </option></select
-          ><span v-if="errors.team_id" class="field-error" role="alert">{{
-            errors.team_id[0]
           }}</span></label
         >
       </div>

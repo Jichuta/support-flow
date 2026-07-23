@@ -4,10 +4,9 @@ class SupportRequest < ApplicationRecord
 
   belongs_to :creator, class_name: "TeamMember"
   belongs_to :assignee, class_name: "TeamMember", optional: true
-  belongs_to :team, class_name: "TeamMember"
   has_many :comments, dependent: :destroy
 
-  validates :title, :description, :status, :priority, :creator, :team, presence: true
+  validates :title, :description, :status, :priority, :creator, presence: true
   validate :assignee_must_be_active
   validate :must_have_a_comment_to_resolve, if: :transitioning_to_resolved?
   validate :closed_request_cannot_return_to_open

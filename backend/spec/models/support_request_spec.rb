@@ -9,7 +9,6 @@ RSpec.describe SupportRequest, type: :model do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:priority) }
     it { is_expected.to validate_presence_of(:creator) }
-    it { is_expected.to validate_presence_of(:team) }
 
     it "rejects an inactive assignee" do
       support_request.assignee = build(:team_member, active: false)
@@ -27,7 +26,6 @@ RSpec.describe SupportRequest, type: :model do
   describe "associations" do
     it { is_expected.to belong_to(:creator).class_name("TeamMember") }
     it { is_expected.to belong_to(:assignee).class_name("TeamMember").optional }
-    it { is_expected.to belong_to(:team).class_name("TeamMember") }
     it "defines comments as a dependent-destroy association" do
       association = described_class.reflect_on_association(:comments)
 

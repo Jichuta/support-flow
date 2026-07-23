@@ -6,7 +6,6 @@ FactoryBot.define do
     priority { :medium }
     due_date { nil }
     creator { association :team_member }
-    team { association :team_member }
     assignee { nil }
   end
 end
