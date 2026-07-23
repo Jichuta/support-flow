@@ -1,222 +1,178 @@
 <template>
-  <div class="team-members-page">
-    <div class="page-header">
+  <div>
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-sm-row align-start align-sm-center justify-space-between ga-3 mb-5">
       <div>
-        <h1 class="page-title">Team Members</h1>
-        <p class="page-subtitle">Manage your support team members and their roles</p>
+        <h1 class="text-h5 font-weight-bold">Team Members</h1>
+        <p class="text-body-2 text-medium-emphasis">Manage your support team members and their roles</p>
       </div>
-      <button class="btn btn-primary" @click="showAddPanel = true">+ Add Member</button>
+      <v-btn color="primary" @click="showAddPanel = true">
+        <v-icon start>mdi-plus</v-icon>
+        Add Member
+      </v-btn>
     </div>
 
-    <ErrorMessage
+    <!-- Error -->
+    <v-alert
       v-if="store.error"
-      :message="store.error.message || 'Failed to load team members.'"
-      :retryable="true"
-      @retry="store.fetchMembers()"
-    />
-
-    <div v-if="store.loading" class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th class="text-right">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="i in 5" :key="i" class="skeleton-row">
-            <td><div class="skeleton skeleton-text w-48"></div></td>
-            <td><div class="skeleton skeleton-text w-48"></div></td>
-            <td><div class="skeleton skeleton-badge"></div></td>
-            <td class="text-right"><div class="skeleton skeleton-btn"></div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <EmptyState
-      v-else-if="store.members.length === 0"
-      icon="👥"
-      title="No team members yet"
-      subtitle="Add your first team member to get started."
+      type="error"
+      variant="tonal"
+      rounded="lg"
+      class="mb-5"
     >
-      <button class="btn btn-primary mt-3" @click="showAddPanel = true">+ Add Member</button>
-    </EmptyState>
+      {{ store.error.message || 'Failed to load team members.' }}
+      <template #append>
+        <v-btn variant="outlined" size="small" color="error" @click="store.fetchMembers()">Retry</v-btn>
+      </template>
+    </v-alert>
 
-    <div v-else class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th class="text-right">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="member in store.members" :key="member.id">
-            <td class="name-cell">{{ member.name }}</td>
-            <td class="email-cell">{{ member.email }}</td>
-            <td>
-              <span class="role-badge" :class="`role-${member.role}`">{{ member.role }}</span>
-            </td>
-            <td class="text-right">
-              <button
-                class="toggle-btn"
-                :class="{ 'toggle-active': member.active }"
-                @click="memberToToggle = member"
-              >
-                <span class="toggle-knob" />
-              </button>
-              <span class="status-label" :class="{ 'status-inactive': !member.active }">
-                {{ member.active ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Loading -->
+    <v-card v-if="store.loading" rounded="lg">
+      <div class="overflow-x-auto">
+        <v-table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="d-none d-sm-table-cell">Email</th>
+              <th>Role</th>
+              <th class="text-end">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="i in 5" :key="i">
+              <td><v-skeleton-loader type="text" width="120" /></td>
+              <td class="d-none d-sm-table-cell"><v-skeleton-loader type="text" width="160" /></td>
+              <td><v-skeleton-loader type="chip" width="80" /></td>
+              <td class="text-end"><v-skeleton-loader type="button" width="60" /></td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
+    </v-card>
 
+    <!-- Empty State -->
+    <v-card v-else-if="store.members.length === 0" rounded="lg">
+      <EmptyState
+        icon="mdi-account-group-outline"
+        title="No team members yet"
+        subtitle="Add your first team member to get started."
+      >
+        <v-btn color="primary" class="mt-2" @click="showAddPanel = true">Add Member</v-btn>
+      </EmptyState>
+    </v-card>
+
+    <!-- Data Table -->
+    <v-card v-else rounded="lg">
+      <div class="overflow-x-auto">
+        <v-table hover>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="d-none d-sm-table-cell">Email</th>
+              <th>Role</th>
+              <th class="text-end">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="member in store.members" :key="member.id">
+              <td class="font-weight-bold">{{ member.name }}</td>
+              <td class="d-none d-sm-table-cell text-medium-emphasis">{{ member.email }}</td>
+              <td>
+                <v-chip
+                  :color="roleColors[member.role]"
+                  size="small"
+                  label
+                  variant="flat"
+                >
+                  {{ member.role }}
+                </v-chip>
+              </td>
+              <td class="text-end">
+                <v-switch
+                  :model-value="member.active"
+                  color="primary"
+                  density="compact"
+                  hide-details
+                  inline
+                  @update:model-value="memberToToggle = member"
+                />
+                <span
+                  class="text-caption font-weight-medium"
+                  :class="member.active ? 'text-primary' : 'text-medium-emphasis'"
+                >
+                  {{ member.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
+    </v-card>
+
+    <!-- Confirm Toggle Modal -->
     <ConfirmModal
       v-if="memberToToggle"
       :title="memberToToggle.active ? 'Deactivate Member?' : 'Activate Member?'"
-      :message="
-        memberToToggle.active
-          ? 'This member will no longer be assignable to new requests.'
-          : 'This member will be available for assignment again.'
-      "
-      icon="⚠"
+      :message="memberToToggle.active
+        ? 'This member will no longer be assignable to new requests.'
+        : 'This member will be available for assignment again.'"
+      icon="mdi-alert"
       variant="warning"
       :confirm-label="memberToToggle.active ? 'Deactivate' : 'Activate'"
       @confirm="confirmToggle"
       @cancel="memberToToggle = null"
     />
 
-    <SidePanel v-if="showAddPanel" title="New Team Member" @close="closeAddPanel">
-      <form @submit.prevent="handleCreate">
-        <FormInput
-          v-model="form.name"
-          label="Name"
-          placeholder="Enter full name"
-          :error="formErrors.name"
-        />
-        <FormInput
-          v-model="form.email"
-          label="Email"
-          type="email"
-          placeholder="user@company.com"
-          :error="formErrors.email"
-        />
-        <FormSelect
-          v-model="form.role"
-          label="Role"
-          placeholder="Select a role"
-          :options="roleOptions"
-          :error="formErrors.role"
-        />
-      </form>
-
-      <template #footer>
-        <button class="btn btn-secondary" @click="closeAddPanel">Cancel</button>
-        <button class="btn btn-primary" :disabled="isSubmitting" @click="handleCreate">
-          {{ isSubmitting ? 'Creating...' : 'Create Member' }}
-        </button>
-      </template>
-    </SidePanel>
+    <!-- Add Member Side Panel -->
+    <v-navigation-drawer
+      v-model="showAddPanel"
+      location="right"
+      temporary
+      :width="panelWidth"
+    >
+      <TeamMemberForm
+        v-if="showAddPanel"
+        @close="showAddPanel = false"
+        @success="onMemberCreated"
+      />
+    </v-navigation-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTeamMemberStore } from '@/stores/teamMemberStore'
 import { useToastStore } from '@/stores/toastStore'
 import EmptyState from '@/components/shared/EmptyState.vue'
-import ErrorMessage from '@/components/shared/ErrorMessage.vue'
 import ConfirmModal from '@/components/shared/ConfirmModal.vue'
-import SidePanel from '@/components/shared/SidePanel.vue'
-import FormInput from '@/components/shared/FormInput.vue'
-import FormSelect from '@/components/shared/FormSelect.vue'
+import TeamMemberForm from '@/components/TeamMemberForm.vue'
 
 const store = useTeamMemberStore()
 const toast = useToastStore()
 
 const showAddPanel = ref(false)
-const isSubmitting = ref(false)
 const memberToToggle = ref(null)
 
-const form = reactive({ name: '', email: '', role: '' })
-const formErrors = reactive({ name: '', email: '', role: '' })
+const windowWidth = ref(window.innerWidth)
+const panelWidth = computed(() => windowWidth.value < 960 ? '100%' : 480)
+function onResize() { windowWidth.value = window.innerWidth }
 
-const roleOptions = [
-  { value: 'developer', label: 'Developer' },
-  { value: 'qa', label: 'QA' },
-  { value: 'support', label: 'Support' }
-]
+const roleColors = {
+  developer: 'blue',
+  qa: 'amber-darken-2',
+  support: 'green'
+}
 
 onMounted(() => {
   store.fetchMembers()
+  window.addEventListener('resize', onResize)
 })
 
-function closeAddPanel() {
+onUnmounted(() => window.removeEventListener('resize', onResize))
+
+function onMemberCreated() {
   showAddPanel.value = false
-  form.name = ''
-  form.email = ''
-  form.role = ''
-  formErrors.name = ''
-  formErrors.email = ''
-  formErrors.role = ''
-}
-
-function validate() {
-  let valid = true
-  formErrors.name = ''
-  formErrors.email = ''
-  formErrors.role = ''
-
-  if (!form.name.trim()) {
-    formErrors.name = 'Name is required'
-    valid = false
-  }
-
-  if (!form.email.trim()) {
-    formErrors.email = 'Email is required'
-    valid = false
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    formErrors.email = 'Email is invalid'
-    valid = false
-  }
-
-  if (!form.role) {
-    formErrors.role = 'Role is required'
-    valid = false
-  }
-
-  return valid
-}
-
-async function handleCreate() {
-  if (!validate()) return
-
-  isSubmitting.value = true
-  try {
-    await store.createMember({
-      name: form.name.trim(),
-      email: form.email.trim(),
-      role: form.role
-    })
-    toast.success('Team member added')
-    closeAddPanel()
-  } catch (err) {
-    if (err.details) {
-      err.details.forEach((d) => toast.error(d))
-    } else {
-      toast.error(err.message || 'Failed to create member')
-    }
-  } finally {
-    isSubmitting.value = false
-  }
+  store.fetchMembers()
 }
 
 async function confirmToggle() {
@@ -230,93 +186,3 @@ async function confirmToggle() {
   }
 }
 </script>
-
-<style scoped>
-.team-members-page {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.name-cell {
-  font-weight: 600;
-  color: #111827;
-}
-
-.email-cell {
-  color: #6b7280;
-}
-
-/* Role Badge */
-.role-badge {
-  display: inline-flex;
-  padding: 3px 10px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.role-developer {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-
-.role-qa {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.role-support {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
-/* Toggle Button */
-.toggle-btn {
-  position: relative;
-  display: inline-block;
-  width: 36px;
-  height: 20px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  background-color: #d1d5db;
-  padding: 0;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-.toggle-btn.toggle-active {
-  background-color: #2563eb;
-}
-
-.toggle-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-  pointer-events: none;
-}
-
-.toggle-btn.toggle-active .toggle-knob {
-  transform: translateX(16px);
-}
-
-.status-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #2563eb;
-}
-
-.status-label.status-inactive {
-  color: #9ca3af;
-}
-</style>

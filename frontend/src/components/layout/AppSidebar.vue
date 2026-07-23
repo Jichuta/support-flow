@@ -1,164 +1,51 @@
 <template>
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <span class="logo-icon">🔧</span>
-      <span class="logo-text">SupportFlow</span>
+  <v-navigation-drawer
+    v-model="drawer"
+    :rail="rail"
+    @click="rail = false"
+  >
+    <div class="pa-4 d-flex align-center">
+      <v-icon color="primary" size="28" class="mr-2">mdi-tools</v-icon>
+      <span v-if="!rail" class="text-h6 font-weight-bold text-primary">SupportFlow</span>
     </div>
 
-    <nav class="sidebar-nav">
-      <RouterLink to="/" class="nav-item" exact-active-class="active">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Dashboard</span>
-      </RouterLink>
-      <RouterLink to="/requests" class="nav-item" active-class="active">
-        <span class="nav-icon">🎫</span>
-        <span class="nav-label">Requests</span>
-      </RouterLink>
-      <RouterLink to="/members" class="nav-item" active-class="active">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label">Team Members</span>
-      </RouterLink>
-    </nav>
+    <v-divider />
 
-    <div class="sidebar-footer">
-      <div class="user-avatar">E1</div>
-      <div class="user-info">
-        <div class="user-name">Engineer 1</div>
-        <div class="user-role">Developer</div>
+    <v-list nav density="comfortable">
+      <v-list-item
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        :exact="item.exact"
+        :prepend-icon="item.icon"
+        :title="item.label"
+        rounded="lg"
+      />
+    </v-list>
+
+    <template #append>
+      <div class="pa-4 d-flex align-center">
+        <v-avatar color="primary" size="32" class="mr-3">
+          <span class="text-white text-caption font-weight-bold">E1</span>
+        </v-avatar>
+        <div v-if="!rail">
+          <div class="text-body-2 font-weight-medium">Engineer 1</div>
+          <div class="text-caption text-medium-emphasis">Developer</div>
+        </div>
       </div>
-    </div>
-  </aside>
+    </template>
+  </v-navigation-drawer>
 </template>
 
-<style scoped>
-.sidebar {
-  width: 200px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-}
+<script setup>
+import { ref } from 'vue'
 
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 56px;
-  padding: 0 16px;
-  border-bottom: 1px solid #e5e7eb;
-  box-sizing: border-box;
-}
+const drawer = ref(true)
+const rail = ref(false)
 
-.logo-icon {
-  font-size: 20px;
-}
-
-.logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.sidebar-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 8px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #374151;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 150ms ease;
-}
-
-.nav-item:hover {
-  background: #f3f4f6;
-}
-
-.nav-item.active {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
-}
-
-.nav-icon {
-  font-size: 16px;
-  width: 20px;
-  text-align: center;
-}
-
-.sidebar-footer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  background: #2563eb;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.user-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #111827;
-}
-
-.user-role {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    box-sizing: border-box;
-  }
-  .sidebar-logo {
-    padding: 0 16px;
-  }
-  .sidebar-nav {
-    flex: initial;
-    flex-direction: row;
-    gap: 4px;
-    overflow-x: auto;
-    padding: 8px;
-  }
-  .nav-item {
-    flex: 0 0 auto;
-    padding: 8px 10px;
-  }
-  .nav-label {
-    font-size: 13px;
-  }
-  .sidebar-footer {
-    display: none;
-  }
-}
-</style>
+const navItems = [
+  { to: '/', icon: 'mdi-view-dashboard-outline', label: 'Dashboard', exact: true },
+  { to: '/requests', icon: 'mdi-ticket-outline', label: 'Requests' },
+  { to: '/members', icon: 'mdi-account-group-outline', label: 'Team Members' }
+]
+</script>
