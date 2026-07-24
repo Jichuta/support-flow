@@ -11,7 +11,7 @@ const memberStore = useTeamMemberStore()
 const toastStore = useToastStore()
 
 const form = reactive({
-  title: '', description: '', priority: 'medium', due_date: '',
+  title: '', description: '', priority: 'medium', status: 'open', due_date: '',
   assignee_id: '', creator_id: ''
 })
 const errors = reactive({})
@@ -27,6 +27,13 @@ const priorityItems = [
   { title: 'Medium', value: 'medium' },
   { title: 'High', value: 'high' },
   { title: 'Critical', value: 'critical' }
+]
+
+const statusItems = [
+  { title: 'Open', value: 'open' },
+  { title: 'In Progress', value: 'in_progress' },
+  { title: 'Resolved', value: 'resolved' },
+  { title: 'Closed', value: 'closed' }
 ]
 
 function clearErrors() { Object.keys(errors).forEach((key) => delete errors[key]) }
@@ -58,7 +65,9 @@ function payload() {
     priority: form.priority, due_date: form.due_date || null,
     assignee_id: form.assignee_id || null
   }
-  if (!isEdit.value) {
+  if (isEdit.value) {
+    data.status = form.status
+  } else {
     data.creator_id = Number(form.creator_id)
   }
   return data
@@ -85,7 +94,8 @@ onMounted(async () => {
       const request = await requestStore.fetchRequest(props.requestId)
       Object.assign(form, {
         title: request.title, description: request.description,
-        priority: request.priority, due_date: request.due_date || '',
+        priority: request.priority, status: request.status,
+        due_date: request.due_date || '',
         assignee_id: request.assignee?.id ? String(request.assignee.id) : ''
       })
     }
@@ -131,6 +141,16 @@ onMounted(async () => {
           label="Priority"
           :items="priorityItems"
           :error-messages="errors.priority"
+          :disabled="loading"
+          class="mb-1"
+        />
+
+        <v-select
+          v-if="isEdit"
+          v-model="form.status"
+          label="Status"
+          :items="statusItems"
+          :error-messages="errors.status"
           :disabled="loading"
           class="mb-1"
         />
